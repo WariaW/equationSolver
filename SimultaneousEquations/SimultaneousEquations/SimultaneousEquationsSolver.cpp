@@ -1,30 +1,18 @@
-#include <iostream>
-#include "EquationsSet.h"
 #include "SimultaneousEquationsSolver.h"
 
-template <size_t rows, size_t cols>
-void upperTriangularMatrix(int(&matrix)[rows][cols]);
-template <size_t rows, size_t cols>
-void swapRows(int(&matrix)[rows][cols], int r1, int r2);
-int main()
-{
-	cout << "hello world!" << endl;
-	int matrix[4][5] = { { 1, 2, 3, 4, 5 }, {4, 8, 3, 1, 4}, {1, 2, 2, 1, 3}, {3, 6, 1, 2, 3} };
-	for (int i = 0; i < 4; i++)
-	{
-		for (int j = 0; j < 5; j++)
-		{
-			cout << matrix[i][j] << "	";
-		}
-		cout << endl;
-	}
-	upperTriangularMatrix<4, 5>(matrix);
 
-	getchar();
+
+//SimultaneousEquationsSolver::SimultaneousEquationsSolver(EquationsSet equations)
+//{
+//	this->equations = equations;
+//}
+
+SimultaneousEquationsSolver::~SimultaneousEquationsSolver()
+{
 }
 
 template <size_t rows, size_t cols>
-void upperTriangularMatrix(int(&matrix)[rows][cols])
+void SimultaneousEquationsSolver::upperTriangularMatrix(int(&matrix)[rows][cols])
 {
 	int coefficient = 0;
 	int swap = -1;
@@ -46,7 +34,7 @@ void upperTriangularMatrix(int(&matrix)[rows][cols])
 					}
 				}
 			}
-			if(swap > i)
+			if (swap > i)
 			{
 				swapRows<rows, cols>(matrix, i, swap);
 			}
@@ -61,14 +49,14 @@ void upperTriangularMatrix(int(&matrix)[rows][cols])
 	{
 		for (int j = 0; j < cols; j++)
 		{
-			cout << matrix[i][j]<<"	";
+			cout << matrix[i][j] << "	";
 		}
 		cout << endl;
 	}
 }
 
 template <size_t rows, size_t cols>
-void swapRows(int(&matrix)[rows][cols], int r1, int r2)
+void SimultaneousEquationsSolver::swapRows(int(&matrix)[rows][cols], int r1, int r2)
 {
 	int tempRow[cols];
 	for (int i = 0; i < cols; i++)
@@ -79,3 +67,4 @@ void swapRows(int(&matrix)[rows][cols], int r1, int r2)
 	}
 
 }
+
