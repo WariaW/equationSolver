@@ -1,3 +1,9 @@
+#pragma once
+#ifndef EQUATIONSSET_H
+#define EQUATIONSSET_H
+
+#include <iostream>
+#include <new>
 #include <string>
 
 using namespace std;
@@ -12,6 +18,11 @@ private:
 
 public:
 	EquationsSet();
+	EquationsSet(const EquationsSet & item);
 	~EquationsSet();
 };
+
+#endif // !EQUATIONSSET_H
+
+
 

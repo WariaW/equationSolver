@@ -1,2 +1,4 @@
-﻿  main.cpp
+﻿  FileDataOperations.cpp
+c:\users\michał\documents\visual studio 2017\projects\simultaneousequations\simultaneousequations\filedataoperations.cpp(25): warning C4018: '<': signed/unsigned mismatch
+c:\users\michał\documents\visual studio 2017\projects\simultaneousequations\simultaneousequations\filedataoperations.cpp(81): warning C4018: '<': signed/unsigned mismatch
   SimultaneousEquations.vcxproj -> C:\Users\Michał\Documents\Visual Studio 2017\Projects\SimultaneousEquations\Debug\SimultaneousEquations.exe
