@@ -18,6 +18,7 @@ FileDataOperations::FileDataOperations(string inputPath, string outputPath) : in
 
 FileDataOperations::~FileDataOperations()
 {
+	delete[] readedLines;
 }
 
 int FileDataOperations::findIndexOfVariable(string variables, char variable)
@@ -46,7 +47,7 @@ void FileDataOperations::readLines()
 	infile.seekg(0, ios::beg);
 	// array of lines from file
 	string *tempLines = new string[linesAmount];
-	if (tempLines == NULL)
+	if (tempLines == nullptr)
 	{
 		cout << "bad allocation!" << endl;
 	}
@@ -67,77 +68,182 @@ void FileDataOperations::readLines()
 	readedLines = tempLines;
 }
 
-// WHOLE FUNCTION TO IMPLEMENT CORRECTLY !!!
+
 EquationsSet FileDataOperations::extractEquations()
 {
-	string variables;
-	// loop for each line
-	for (int i = 0; i < readedLinesAmount; i++)
+	try
 	{
-		string temp = readedLines[i];
-		bool numberStarted = false;
-		bool coefficientNegative = false;
-		string numberString = "";
-		// loop for every character in line
-		for (int c = 0; c < temp.size(); c++)
+		// search for all variables
+		string variables = "";
+		for (int i = 0; i < readedLinesAmount; i++)
 		{
-			if (temp[c] == ' ')
+			string temp = readedLines[i];
+			for (int c = 0; c < temp.size(); c++)
 			{
-				continue;
-			}
-			if (temp[c] == '-')
-			{
-				coefficientNegative = true;
-			}
-			if (isdigit(temp[c]) || temp[c] == '.')
-			{
-				numberString += temp[c];
-				if (!numberStarted)
+				if ((temp[c] >= 65 && temp[c] <= 90) || (temp[c] >= 97 && temp[c] <= 122))
 				{
-					numberStarted = true;
-				}
-			}
-			else if (numberStarted)
-			{
-				
-			}
-			if ((temp[c] >= 65 && temp[c] <= 90) || (temp[c] >= 97 && temp[c] <= 122))
-			{
-				int varIndex = findIndexOfVariable(variables, temp[c]);
-				if (varIndex == -1)
-				{
-					variables += temp[c];
-					++varIndex;
-				}
-				if (numberStarted)
-				{
-					// printing
-					if (coefficientNegative)
+					int varIndex = findIndexOfVariable(variables, temp[c]);
+					if (varIndex == -1)
 					{
-						cout << (stod(numberString) * (-1)) << endl;
-					}
-					else
-					{
-						cout << numberString << endl;
-					}
-					numberStarted = false;
-				}
-				else
-				{
-					if (coefficientNegative)
-					{
-						cout << -1 << endl;
-					}
-					else
-					{
-						cout << 1 << endl;
+						variables += temp[c];
+						//++varIndex;
 					}
 				}
-				cout << temp[c] << " as var with index: " << varIndex << endl;
 			}
-
 		}
-	}
+		// temporary coefficients matrix
+		double **tempCoefficients = new (nothrow) double*[readedLinesAmount];
+		if (tempCoefficients == nullptr)
+		{
+			throw bad_alloc();
+		}
+		for (int y = 0; y < readedLinesAmount; y++)
+		{
+			tempCoefficients[y] = new (nothrow) double[variables.size() + 1];
+			if (tempCoefficients[y] == nullptr)
+			{
+				throw bad_alloc();
+			}
+			// fill matrix with zeros
+			for (int x = 0; x < variables.size() + 1; x++)
+			{
+				tempCoefficients[y][x] = 0.0;
+			}
+		}
+		// loop for each line
+		for (int i = 0; i < readedLinesAmount; i++)
+		{
+			string temp = readedLines[i];
+			bool rightSide = false;
+			bool numberStarted = false;
+			bool coefficientNegative = false;
+			string numberString = "";
+			// loop for every character in line
+			for (int c = 0; c < temp.size(); c++)
+			{
+				if (temp[c] == ' ')
+				{
+					continue;
+				}
+				if (temp[c] == '=')
+				{
+					if (numberStarted)
+					{
+						cerr << "Unknown behavior - number without variable name just before \"=\" sign" << endl;
+					}
+					rightSide = true;
+					continue;
+				}
+				
+				if (temp[c] == '-')
+				{
+					coefficientNegative = true;
+				}
+				if (isdigit(temp[c]) || temp[c] == '.')
+				{
+					numberString += temp[c];
+					if (!numberStarted)
+					{
+						numberStarted = true;
+					}
+				}
+				/*else if (numberStarted)
+				{
 
-	return EquationsSet();
+				}*/
+				// check if end of line and get value of the right side of equation
+				if (c == temp.size() - 1 && rightSide)
+				{
+					if (numberStarted)
+					{
+						if (coefficientNegative)
+						{
+							tempCoefficients[i][variables.size()] = (-1.0) * stod(numberString);
+							coefficientNegative = false;
+						}
+						else
+						{
+							tempCoefficients[i][variables.size()] = stod(numberString);
+						}
+					}
+					else
+					{
+						cerr << "No number on the right side of " << i << " equation" << endl;
+					}
+				}
+				if ((temp[c] >= 65 && temp[c] <= 90) || (temp[c] >= 97 && temp[c] <= 122))
+				{
+					int varIndex = findIndexOfVariable(variables, temp[c]);
+					if (varIndex == -1)
+					{
+						throw exception("Cannot find specific variable name");
+					}
+					if (numberStarted)
+					{
+						// printing
+						if (coefficientNegative)
+						{
+							tempCoefficients[i][varIndex] = (-1.0) * stod(numberString);
+							coefficientNegative = false;
+							cout << (stod(numberString) * (-1.0)) << endl;
+						}
+						else
+						{
+							tempCoefficients[i][varIndex] = stod(numberString);
+							cout << numberString << endl;
+						}
+						numberString = "";
+						numberStarted = false;
+					}
+					else
+					{
+						if (coefficientNegative)
+						{
+							tempCoefficients[i][varIndex] = -1.0;
+							coefficientNegative = false;
+							cout << -1 << endl;
+						}
+						else
+						{
+							tempCoefficients[i][varIndex] = 1.0;
+							cout << 1 << endl;
+						}
+					}
+					cout << temp[c] << " as var with index: " << varIndex << endl;
+				}
+
+			}
+		}
+		// printing tempCoefficients matrix
+		for (int y = 0; y < readedLinesAmount; y++)
+		{
+			for (int x = 0; x < variables.size() + 1; x++)
+			{
+				cout << tempCoefficients[y][x] << "  ";
+			}
+			cout << endl;
+		}
+		// printing variables
+		cout << "Variables in equations: " << variables << endl;
+		// creating object to return
+		EquationsSet es;
+		es.setCoefficients(tempCoefficients, readedLinesAmount, variables.size() + 1);
+		es.setVariablesNames(variables);
+		// freeing memory 
+		for (int y = 0; y < readedLinesAmount; y++)
+		{
+			delete[] tempCoefficients[y];
+		}
+		delete[] tempCoefficients;
+
+		return es;
+	}
+	catch (const bad_alloc& e)
+	{
+		cerr << "Bad allocation" << endl;
+	}
+	catch (const exception& e)
+	{
+		cerr << e.what() << endl;
+	}
 }

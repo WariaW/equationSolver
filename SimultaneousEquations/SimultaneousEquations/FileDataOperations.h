@@ -1,6 +1,4 @@
 #pragma once
-#ifndef FILEDATAOPERATIONS_H
-#define FILEDATAOPERATIONS_H
 
 #include <fstream>
 #include <string>
@@ -34,7 +32,6 @@ public:
 
 };
 
-#endif // !FILEDATAOPERATIONS_H
 
 
 
