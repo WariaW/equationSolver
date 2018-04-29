@@ -1,21 +1,24 @@
 #pragma once
-
-
 #include "EquationsSet.h"
+#include <iostream>
 using namespace std;
+
 class SimultaneousEquationsSolver
 {
-	//EquationsSet equations;
+
 public:
-	//SimultaneousEquationsSolver(EquationsSet equations);
+	EquationsSet equations;
+
+	SimultaneousEquationsSolver();
+	SimultaneousEquationsSolver(const EquationsSet &equations);
 	~SimultaneousEquationsSolver();
 
-	template <size_t rows, size_t cols>
-	void upperTriangularMatrix(int(&matrix)[rows][cols]);
+	void upperTriangularMatrix();
+	void printMatrix(double **matrix);
+	int numberOfSolutions(double **matrix);
 
-	template <size_t rows, size_t cols>
-	void swapRows(int(&matrix)[rows][cols], int r1, int r2);
-
+private:
+	void swapRows(double **matrix, int r1, int r2);
 };
 
 

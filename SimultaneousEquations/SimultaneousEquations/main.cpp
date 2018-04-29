@@ -15,7 +15,10 @@ int main()
 		Fdo.readLines();
 		EquationsSet es = Fdo.extractEquations();
 		es.printCoefficients();
-
+		SimultaneousEquationsSolver ses(es);
+		ses.upperTriangularMatrix();
+		ses.printMatrix(ses.equations.getCoefficients());
+		cout<<"Number of solutios = "<<ses.numberOfSolutions(ses.equations.getCoefficients())<<endl;
 	}
 	
 	getchar();
