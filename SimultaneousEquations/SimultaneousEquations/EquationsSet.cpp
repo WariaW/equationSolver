@@ -38,7 +38,6 @@ EquationsSet::EquationsSet(const EquationsSet & item)
 	}
 }
 
-
 EquationsSet::~EquationsSet()
 {
 	if (equationsAmount > 0)

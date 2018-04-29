@@ -11,11 +11,13 @@ int main()
 	for (int p = 0; p < PATHS_AMOUNT; p++)
 	{
 		paths[p] = "equations" + to_string(p) + ".txt";
+		FileDataOperations Fdo(paths[p]);
+		Fdo.readLines();
+		EquationsSet es = Fdo.extractEquations();
+		es.printCoefficients();
+
 	}
-	FileDataOperations Fdo(paths[0]);
-	Fdo.readLines();
-	EquationsSet es = Fdo.extractEquations();
-	es.printCoefficients();
+	
 	getchar();
 	return 0;
 }

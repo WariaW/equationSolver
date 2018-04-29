@@ -91,7 +91,7 @@ EquationsSet FileDataOperations::extractEquations()
 				}
 			}
 		}
-		// temporary coefficients matrix
+		// temporary coefficients matrix allocation
 		double **tempCoefficients = new (nothrow) double*[readedLinesAmount];
 		if (tempCoefficients == nullptr)
 		{
@@ -134,43 +134,30 @@ EquationsSet FileDataOperations::extractEquations()
 					rightSide = true;
 					continue;
 				}
-				
 				if (temp[c] == '-')
 				{
 					coefficientNegative = true;
+					continue;
 				}
 				if (isdigit(temp[c]) || temp[c] == '.')
 				{
 					numberString += temp[c];
-					if (!numberStarted)
-					{
-						numberStarted = true;
-					}
+					numberStarted = numberStarted ? numberStarted : true;
 				}
-				/*else if (numberStarted)
-				{
-
-				}*/
 				// check if end of line and get value of the right side of equation
-				if (c == temp.size() - 1 && rightSide)
+				if (c == (temp.size() - 1) && rightSide)
 				{
 					if (numberStarted)
 					{
-						if (coefficientNegative)
-						{
-							tempCoefficients[i][variables.size()] = (-1.0) * stod(numberString);
-							coefficientNegative = false;
-						}
-						else
-						{
-							tempCoefficients[i][variables.size()] = stod(numberString);
-						}
+						tempCoefficients[i][variables.size()] = coefficientNegative ? (-1.0) * stod(numberString) : stod(numberString);
+						coefficientNegative = false;
 					}
 					else
 					{
 						cerr << "No number on the right side of " << i << " equation" << endl;
 					}
 				}
+				// if variable symbol appears eg. 'x' or 'y'
 				if ((temp[c] >= 65 && temp[c] <= 90) || (temp[c] >= 97 && temp[c] <= 122))
 				{
 					int varIndex = findIndexOfVariable(variables, temp[c]);
@@ -180,38 +167,20 @@ EquationsSet FileDataOperations::extractEquations()
 					}
 					if (numberStarted)
 					{
-						// printing
-						if (coefficientNegative)
-						{
-							tempCoefficients[i][varIndex] = (-1.0) * stod(numberString);
-							coefficientNegative = false;
-							cout << (stod(numberString) * (-1.0)) << endl;
-						}
-						else
-						{
-							tempCoefficients[i][varIndex] = stod(numberString);
-							cout << numberString << endl;
-						}
+						tempCoefficients[i][varIndex] = coefficientNegative ? (-1.0) * stod(numberString) : stod(numberString);
+						coefficientNegative = false;
+						cout << tempCoefficients[i][varIndex] << endl;
 						numberString = "";
 						numberStarted = false;
 					}
 					else
 					{
-						if (coefficientNegative)
-						{
-							tempCoefficients[i][varIndex] = -1.0;
-							coefficientNegative = false;
-							cout << -1 << endl;
-						}
-						else
-						{
-							tempCoefficients[i][varIndex] = 1.0;
-							cout << 1 << endl;
-						}
+						tempCoefficients[i][varIndex] = coefficientNegative ? -1.0 : 1.0;
+						coefficientNegative = false;
+						cout << tempCoefficients[i][varIndex] << endl;
 					}
 					cout << temp[c] << " as var with index: " << varIndex << endl;
 				}
-
 			}
 		}
 		// printing tempCoefficients matrix

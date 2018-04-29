@@ -26,7 +26,6 @@ public:
 	int getVariablesAmount() { return variablesAmount; }
 
 	void printCoefficients();
-	// operators overloading
 	EquationsSet& operator=(const EquationsSet& rightSide);
 };
 
