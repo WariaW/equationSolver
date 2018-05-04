@@ -8,10 +8,12 @@ SimultaneousEquationsSolver::SimultaneousEquationsSolver() : equations()
 
 SimultaneousEquationsSolver::SimultaneousEquationsSolver(const EquationsSet &input_equations) : equations(input_equations)
 {
+	solution = new double[equations.getVariablesAmount()];
 }
 
 SimultaneousEquationsSolver::~SimultaneousEquationsSolver()
 {
+	delete[] solution;
 }
 
 void SimultaneousEquationsSolver::upperTriangularMatrix()
@@ -103,6 +105,11 @@ int SimultaneousEquationsSolver::numberOfSolutions(double **matrix)
 		}
 		c = 0;
 	}
+	if (equations.getVariablesAmount() > equations.getEquationsAmount())
+	{
+		zeroRowsACounter += (equations.getVariablesAmount() - equations.getEquationsAmount());
+		zeroRowsUCounter += (equations.getVariablesAmount() - equations.getEquationsAmount());
+	}
 	if (zeroRowsACounter == 0 && zeroRowsUCounter == 0)
 	{
 		numberOfS = 0; //<- Equations have only one solution
@@ -116,4 +123,25 @@ int SimultaneousEquationsSolver::numberOfSolutions(double **matrix)
 		numberOfS = -1;	//<- Equations are contradictory
 	}
 	return numberOfS;
+}
+
+void SimultaneousEquationsSolver::oneSolution()
+{
+	for (int i = equations.getVariablesAmount(); i > 0; i--)
+	{
+		solution[i - 1] = equations.getCoefficients()[i - 1][equations.getVariablesAmount()];
+		for (int j = i; j < equations.getVariablesAmount(); j++)
+		{
+			solution[i - 1] -= (equations.getCoefficients()[i - 1][j] * solution[j]);
+		}
+		solution[i - 1] /= equations.getCoefficients()[i - 1][i - 1];
+	}
+}
+
+void SimultaneousEquationsSolver::printSolution()
+{
+	for (int i = 0; i < equations.getVariablesAmount(); i++)
+	{
+		cout << equations.getVariablesNames()[i] << " = " << solution[i] << endl;
+	}
 }

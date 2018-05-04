@@ -17,8 +17,22 @@ int main()
 		es.printCoefficients();
 		SimultaneousEquationsSolver ses(es);
 		ses.upperTriangularMatrix();
-		ses.printMatrix(ses.equations.getCoefficients());
-		cout<<"Number of solutios = "<<ses.numberOfSolutions(ses.equations.getCoefficients())<<endl;
+		ses.printMatrix(ses.getEquations().getCoefficients());
+		switch (ses.numberOfSolutions(ses.getEquations().getCoefficients()))
+		{
+		case -1:
+			cout << "Equations are contradictory" << endl;
+			break;
+		case 0:
+			cout << "Equations have one solution" << endl;
+			ses.oneSolution();
+			ses.printSolution();
+			break;
+		default:
+			cout << "Equations have infinite number of solutions dependent on " << ses.numberOfSolutions(ses.getEquations().getCoefficients()) << " parameters" << endl;
+			break;
+		}
+
 	}
 	
 	getchar();
